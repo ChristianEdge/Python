@@ -1,0 +1,29 @@
+'''
+Program Name: Chaos Program Ch1Ex03
+Program Description: Demonstrates chaotic behavior in computers
+Author: Christian Edge
+Date created: 28 May 2019
+Date last modified: 28 May 2019
+Notes of interest: Uses "time" module
+'''
+
+import time
+
+def main():
+    print("This program illustrates a chaotic function.")
+    
+    #Output instructions to user, get and store user input
+    x = eval(input("Enter a number between 0 and 1: "))
+
+    #Calculate and display output
+    for i in range(10):
+        x = 2.0 * x * (1-x)
+        print(x)
+    
+    #Output to console the author, program, & date/time program was run
+    print("Christian Edge")
+    print("CIS110 Chaos Program Ch1Ex03")
+    print(time.asctime(time.localtime(time.time())))
+
+#Run Program          
+main()
