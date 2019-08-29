@@ -13,8 +13,8 @@ import math
 
 def main():
     #Output introduction to user
-    print("\n\tWelcome to Program 2. I calculate the amount of time to send data from " +
-          "the Mars Curiosity rover to NASA.\n")
+    print("\n\tWelcome to the Mars-to-Earth radio timer.")
+    print("I calculate the amount of time to send data from the Mars Curiosity rover to NASA.\n")
 
     print("\tMars' closest orbit to Earth is a distance of about 34 million miles." +
           "\nThe farthest apart they can be is about 249 million miles. \nThe " +
