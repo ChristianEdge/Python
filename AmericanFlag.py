@@ -4,7 +4,7 @@ Program Description: Draw an American flag using graphics.py
 Author: Christian Edge
 Date created: 15 June 2019
 Last modified: 17 June 2019
-Notes of interest: Uses time module and graphics.py
+Notes of interest: Uses time module and graphics.py by John Zelle
 '''
 
 import time
