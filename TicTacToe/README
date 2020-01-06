@@ -1,0 +1,5 @@
+The TicTacToe folder conatins the TicTacToe game program written in Python 3. 
+It is necessary to install the Pygame packages to run TicTacToe.
+
+This code was written by Christian Edge starting on the 1st of January, 2020. 
+I wanted to write a simple game to completion entirely on my own.
