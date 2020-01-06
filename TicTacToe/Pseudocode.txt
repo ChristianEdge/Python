@@ -1,0 +1,17 @@
+#Pseudocode
+
+#Open a window
+
+#Draw white background and lines
+
+#Player's turn
+	#Get user mouse input
+	#If input is in valid square, draw X
+	#otherwise wait for valid input (still player's turn)
+	#Check if player wins, otherwise it's opponent's turn
+
+#Computer's turn
+	#Make best possible move, draw O
+	#Check if computer wins, otherwise it's player's turn
+
+#If winner, alert and exit()
