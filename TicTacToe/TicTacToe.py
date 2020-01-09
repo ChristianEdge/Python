@@ -3,7 +3,7 @@ Program Name: Tic Tac Toe
 Program Description: 
 Author: Christian Edge
 Date created: 01 Jan 2020
-Last modified: Today
+Last modified: 09 Jan 2020
 Notes of interest: Uses pygame, time, random modules
 '''
 
