@@ -3,7 +3,7 @@ Program Name: Tic Tac Toe
 Program Description: 
 Author: Christian Edge
 Date created: 01 Jan 2020
-Last modified: 09 Jan 2020
+Last modified: Today
 Notes of interest: Uses pygame, time, random modules
 '''
 
@@ -34,6 +34,7 @@ class TicTacToe():
         #Game variables
         self.fieldX = GameData.BORDER
         self.fieldY = GameData.BORDER
+        self.tile = GameData.TILE
         self.playerX = 'X'
         self.playerO = 'O'
         self.nullField = '-' #Empty spaces
@@ -44,7 +45,8 @@ class TicTacToe():
         """This method generates the conditions for a new game.
         It draws a new game board, sets variables"""
         self.window.fill(Color.BLACK)
-        self.gameBoard(GameData.TILE, GameData.BORDER, #Draws game
+        self.draw()
+        self.gameBoard(self.tile, self.fieldX, self.fieldY, #Draws game
                        Color.WHITE, Color.GAINSBORO)
         #Update scores
         self.drawText(GameData.TILE + GameData.BORDER, #x
@@ -216,21 +218,24 @@ class TicTacToe():
                                                 y, #starting y
                                                 tile * 3 + 1,  #width
                                                 tile * 3 + 1)) #height
-        self.drawGrid(self.window, tile, border, lnColor)
+        
+        self.drawGrid(self.window, tile, self.fieldX, self.fieldY, lnColor)
       
-    def drawGrid(self, window, tile, border, lnColor):
+    def drawGrid(self, window, tile, x, y, lnColor):
         """Creates the line grid."""
         for multip in range(1,3): #multiplier       
             pygame.draw.line(window,                #vertical lines
                              lnColor, 
-                             (border,  tile * multip + border), #Start x, y
-                             (tile * 3 + border, tile * multip + border),#End x, y
+                             (x,  tile * multip + y), #Start x, y
+                             (tile * 3 + x, tile * multip + y),#End x, y
                              tile // 16)#Width
+            
             pygame.draw.line(window,                #horizontal lines
                              lnColor,
-                             (tile * multip + border, border), 
-                             (tile * multip + border, tile * 3 + border),
+                             (tile * multip + x, y), 
+                             (tile * multip + x, tile * 3 + y),
                              tile // 16)
+            
 
     def drawText(self, x, y, text, size, color):
         """This function draws text to the screen. Pass x and y coordinates,
