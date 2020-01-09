@@ -3,7 +3,7 @@ Program Name: Tic Tac Toe
 Program Description: 
 Author: Christian Edge
 Date created: 01 Jan 2020
-Last modified: 06 Jan 2020
+Last modified: 09 Jan 2020
 Notes of interest: Uses pygame, time, random modules
 '''
 
@@ -16,7 +16,8 @@ from GameData import * #holds Window size, FPS, etc.
 from Color import * #holds colors as uppercase words
 
 class TicTacToe():
-    """This class defines the game Tic Tac Toe."""
+    """This class defines the game Tic Tac Toe. To run the game,
+        instantiate the object and call its run() method."""
 
     def __init__(self):
         pygame.init() #Must initilize pygame once
@@ -25,47 +26,110 @@ class TicTacToe():
         #Create window
         self.window = pygame.display.set_mode((GameData.WIN_WD, #Window width
                                                GameData.WIN_HT))#Window height
-        self.maxX, self.maxY = self.window.get_size()
-            #maxX and maxY get assigned the full window X & Y pixel positions
-        pygame.display.set_caption("Tic Tac Toe")
+        pygame.display.set_caption(GameData.TITLE)
+        self.clock = pygame.time.Clock()
         self.BG_COLOR = Color.BLACK
         pygame.key.set_repeat(0)  #Disables key repeat
+        self.font = pygame.font.match_font(GameData.FONT_PLYR)
         #Game variables
+        self.fieldX = GameData.BORDER
+        self.fieldY = GameData.BORDER
         self.playerX = 'X'
         self.playerO = 'O'
-        self.nullField = '-'
+        self.nullField = '-' #Empty spaces
         self.playerXscore = 0
         self.playerOscore = 0
 
     def new(self):
         """This method generates the conditions for a new game.
         It draws a new game board, sets variables"""
-        self.gameBoard(self.window, GameData.TILE_SIZE,
-                       self.maxX, self.maxY, GameData.BORDER,
-                       Color.WHITE, Color.GAINSBORO) #Draws game board once
+        self.window.fill(Color.BLACK)
+        self.gameBoard(GameData.TILE, GameData.BORDER, #Draws game
+                       Color.WHITE, Color.GAINSBORO)
+        #Update scores
+        self.drawText(GameData.TILE + GameData.BORDER, #x
+                      GameData.TILE * 3 + GameData.BORDER, #y
+                      "Player Score: " + str(self.playerXscore),
+                      GameData.TILE // 8, Color.GRAY)
+        self.drawText(GameData.TILE * 2 + GameData.BORDER, #x
+                      GameData.TILE * 3 + GameData.BORDER, #y
+                      "Computer Score: " + str(self.playerOscore),
+                      GameData.TILE // 8, Color.GRAY)
         self.playerTurn = True #Controls turn swapping, human player == True
         self.winner = False #Check for winner after each move
         self.gameField = [[self.nullField for x in range(3)] for x in range(3)]
-            #3 lists of 3 items, representing the 9 spaces
-          
-    def run(self):
+        #3 lists of 3 items, representing the 9 spaces
 
-        self.new() #Draw new game board, reset variables
+    def intro(self):
+        """This function defines the start menu screen."""
+        runIntro = True
 
-        #Game loop ******************************************
-        self.running = True
-        while self.running:
+        while runIntro:
+            #Wait for initial user event
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:   #Mouse main button click
+                        runIntro = False
+            #Quit events
+                if event.type == pygame.QUIT: #Window 'X' button
+                    self.quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.quit()
+                    
+            #Fill the window
+            self.window.fill(Color.BLACK)
+            #Draw the text
+            self.drawText(GameData.WIN_WD // 2,
+                          GameData.WIN_HT // 2,
+                          GameData.TITLE,
+                          42, Color.BLUEWTR)#x, y, text, size, color
+            #Update display
+            self.draw()
 
-            self.events() #Check for player input
+    def endGame(self):
+        """This function defines what happens at the end of each game."""
+        #Draw buttons
+        print("Endgame")
+        size = GameData.TILE // 2
+        #Button coordinates
+        playBtnX = GameData.TILE + GameData.BORDER - size * 0.8
+        playBtnY = GameData.TILE * 1.5 + GameData.BORDER - size * 0.2
+        quitBtnX = GameData.TILE * 2 + GameData.BORDER - size * 0.8
+        quitBtnY = GameData.TILE * 1.5 + GameData.BORDER - size * 0.2
+        #Text coordinates
+        playTxtX = GameData.TILE + GameData.BORDER - size * 0.8 + size / 2
+        playTxtY = GameData.TILE * 1.5 + GameData.BORDER - size * 0.2 + size / 2
+        quitTxtX = GameData.TILE * 2 + GameData.BORDER - size * 0.8 + size / 2
+        quitTxtY = GameData.TILE * 1.5 + GameData.BORDER - size * 0.2 + size / 2
+        endGame = True
         
-            self.update(self.gameField) #Process computer turn
-
-            
-                
-            self.draw() #Output to screen
-            
-        #End of game while loop *****************************
-
+        while endGame:
+            mousePos = pygame.mouse.get_pos()
+            #Mouse hover color change for buttons
+            if (playBtnX < mousePos[0] < playBtnX + size and 
+                playBtnY < mousePos[1]< playBtnY + size):
+                self.drawButton(playBtnX, playBtnY, size, Color.LIGHTGREEN)
+            else: self.drawButton(playBtnX, playBtnY, size, Color.GREEN)
+            if (quitBtnX < mousePos[0] < quitBtnX + size and 
+                quitBtnY < mousePos[1] < quitBtnY + size):
+                self.drawButton(quitBtnX, quitBtnY, size, Color.LIGHTRED)
+            else: self.drawButton(quitBtnX, quitBtnY, size, Color.RED)
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        mouseX, mouseY = event.pos #Mouse main button click
+                        if (playBtnX < mouseX < playBtnX + size and
+                            playBtnY < mouseY < playBtnY + size):
+                            #click inside confines of button
+                            self.new()
+                            endGame = False
+                        if (quitBtnX < mouseX < quitBtnX + size and
+                            quitBtnY < mouseY < quitBtnY + size):
+                            self.quit()
+            self.drawText(playTxtX, playTxtY, "Replay?", 32, Color.BLACK)
+            self.drawText(quitTxtX, quitTxtY, "Quit", 32, Color.BLACK)
+            self.draw()
 
     def events(self):
         """This method handles player inputs -> event.get() returns a list of events
@@ -75,18 +139,17 @@ class TicTacToe():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:   #Mouse main button click
                     mouseX, mouseY = self.convertMove(event.pos,
-                                                    GameData.TILE_SIZE, GameData.BORDER)
+                                                    GameData.TILE, GameData.BORDER)
                     #Check validity of move against gameField[]
                     if (self.isValidMove(mouseX, mouseY, self.gameField) and
                     not self.winner and self.playerTurn):
                         #window, x, y, tile, color
                         self.drawX(self.window,
-                                   GameData.BORDER + GameData.TILE_SIZE * mouseX,
-                                   GameData.BORDER + GameData.TILE_SIZE * mouseY,
-                                   GameData.TILE_SIZE, Color.BLUE)
+                                   GameData.BORDER + GameData.TILE * mouseX,
+                                   GameData.BORDER + GameData.TILE * mouseY,
+                                   GameData.TILE, Color.BLUE)
                         self.gameField[mouseY][mouseX] = 'X'
                         self.playerTurn = False
-                        #print(self.gameField)
             #Quit events
             if event.type == pygame.QUIT: #Window 'X' button
                 self.quit()
@@ -94,53 +157,90 @@ class TicTacToe():
                 if event.key == pygame.K_ESCAPE:
                     self.quit()
 
-    def update(self, arr):
+    def update(self):
         """Updates the game every loop"""
+        
         #Check for a winner
         if self.isWin(self.gameField, self.playerX):
             self.winner = True
-            print("Winner : Player ", self.playerX)
             self.playerXscore += 1
+            self.endGame()
+            print("Winner : Player ")
+            #Pause loop
+
         #Compter AI move
-        self.ai(arr)
+        self.ai(self.gameField)
+        
         #Check for a winner
         if self.isWin(self.gameField, self.playerO):
             self.winner = True
-            print("Winner : Player ", self.playerO)
             self.playerOscore += 1
-
+            self.endGame()
+            print("Winner : Player ", self.playerO)
+            
+        #Check for stalemate
         if self.isStalemate(self.gameField) and not self.winner:
+            self.endGame()
             print("Stalemate")
         
     def draw(self):
         """Draws game every loop"""
         pygame.display.update() #Must go after each object's draw(). Better than flip()
 
-    def gameBoard(self, window, tile, winX, winY, border, bgColor, lnColor):
-        """Define the game board. Args winX & winY represent the maximum
-        coordinates of the window. There are borders to consider."""
-        #Background square
-        pygame.draw.rect(window, bgColor, (border, #starting X
-                                           border, #starting Y
-                                           winX - (border * 2), #end X
-                                           winY - (border * 2)))#end Y
-        self.drawGrid(window, tile, border, lnColor)
+          
+    def run(self):
+        """The run command runs a new set of games."""
+        self.intro()
+
+        self.new() #Draw new game board, reset variables
+
+        #Game loop ******************************************
+        self.running = True
+        while self.running:
+            self.events() #Check for player input
+        
+            self.update() #Process computer turn
+                            
+            self.draw() #Output to screen
+
+            self.clock.tick(GameData.FPS)
+            
+        #End of game while loop *****************************
+
+    def gameBoard(self, tile, x, y, bgColor, lnColor):
+        """Define the game board background square and grid lines.
+        There are borders to consider. One pixel in length is added
+        to the background square to make sure it covers the grid
+        lines (they were poking out)."""
+        pygame.draw.rect(self.window, bgColor, (x, # starting x
+                                                y, #starting y
+                                                tile * 3 + 1,  #width
+                                                tile * 3 + 1)) #height
+        self.drawGrid(self.window, tile, border, lnColor)
       
     def drawGrid(self, window, tile, border, lnColor):
         """Creates the line grid."""
-        for multip in range(1,3):            
-            pygame.draw.line(window,        #vertical lines
+        for multip in range(1,3): #multiplier       
+            pygame.draw.line(window,                #vertical lines
                              lnColor, 
-                             (border,  tile * multip + border), #Start X, Y
-                             (tile * 3 + border, tile * multip + border),#End
+                             (border,  tile * multip + border), #Start x, y
+                             (tile * 3 + border, tile * multip + border),#End x, y
                              tile // 16)#Width
-            pygame.draw.line(window,        #horizontal lines
+            pygame.draw.line(window,                #horizontal lines
                              lnColor,
                              (tile * multip + border, border), 
                              (tile * multip + border, tile * 3 + border),
                              tile // 16)
 
-
+    def drawText(self, x, y, text, size, color):
+        """This function draws text to the screen. Pass x and y coordinates,
+        the text to display, and its size and color."""
+        font = pygame.font.Font(self.font, size)
+        textSurface = font.render(text, True, color)
+        textRect = textSurface.get_rect()
+        textRect.midtop = (x, y)
+        self.window.blit(textSurface, textRect)
+    
     def drawX(self, window, x, y, tile, color):
         """Draw an X. the x, y is the top left of the square where it will be drawn."""
         width = tile // 8 #Width of line
@@ -164,6 +264,10 @@ class TicTacToe():
                            (x + center, y + center),
                            radius,
                            width)
+
+    def drawButton(self, x, y, size, color):
+        """Defines a button. Still need to define a button size."""
+        pygame.draw.rect(self.window, color, (x, y, size * 1.5, size))
 
     def convertMove(self, tup, tile, border):
         """This method determines where a user clicked on a gameboard by returning
@@ -206,7 +310,6 @@ class TicTacToe():
             return True
         else: return False
         
-
     def ai(self, arr):
         '''
         AI chooses move spaces in this order: 
@@ -233,9 +336,9 @@ class TicTacToe():
                             arr[j][i] = 'O'
                             #window, x, y, tile, border, color
                             self.drawO(self.window,
-                                       GameData.BORDER + GameData.TILE_SIZE * i,
-                                       GameData.BORDER + GameData.TILE_SIZE * j,
-                                       GameData.TILE_SIZE, GameData.BORDER, Color.RED)
+                                       GameData.BORDER + GameData.TILE * i,
+                                       GameData.BORDER + GameData.TILE * j,
+                                       GameData.TILE, GameData.BORDER, Color.RED)
                             self.playerTurn = True
                             return
                         elif self.isWin(gameFieldCopy2, self.playerX): #Prevent player win
@@ -244,9 +347,9 @@ class TicTacToe():
                             arr[j][i] = 'O'
                             #window, x, y, tile, border, color
                             self.drawO(self.window,
-                                       GameData.BORDER + GameData.TILE_SIZE * i,
-                                       GameData.BORDER + GameData.TILE_SIZE * j,
-                                       GameData.TILE_SIZE, GameData.BORDER, Color.RED)
+                                       GameData.BORDER + GameData.TILE * i,
+                                       GameData.BORDER + GameData.TILE * j,
+                                       GameData.TILE, GameData.BORDER, Color.RED)
                             print(arr)
                             self.playerTurn = True
                             return
@@ -261,9 +364,9 @@ class TicTacToe():
                 x, y = validCorner[random.randrange(len(validCorner))]
                 arr[y][x] = 'O'
                 self.drawO(self.window, #window, x, y, tile, border, color
-                            GameData.BORDER + GameData.TILE_SIZE * x,
-                            GameData.BORDER + GameData.TILE_SIZE * y,
-                            GameData.TILE_SIZE, GameData.BORDER, Color.RED)
+                            GameData.BORDER + GameData.TILE * x,
+                            GameData.BORDER + GameData.TILE * y,
+                            GameData.TILE, GameData.BORDER, Color.RED)
                 self.playerTurn = True
                 return
             #Else if there are no valid corners and the middle position
@@ -271,9 +374,9 @@ class TicTacToe():
             elif self.isValidMove(1, 1, arr):
                 arr[1][1] = 'O'
                 self.drawO(self.window, #window, x, y, tile, border, color
-                            GameData.BORDER + GameData.TILE_SIZE * x,
-                            GameData.BORDER + GameData.TILE_SIZE * y,
-                            GameData.TILE_SIZE, GameData.BORDER, Color.RED)
+                            GameData.BORDER + GameData.TILE * x,
+                            GameData.BORDER + GameData.TILE * y,
+                            GameData.TILE, GameData.BORDER, Color.RED)
                 self.playerTurn = True
                 return
             #Else choose a side space
@@ -291,9 +394,9 @@ class TicTacToe():
                     x, y = validSide[random.randrange(len(validSide))]
                     arr[y][x] = 'O'
                     self.drawO(self.window, #window, x, y, tile, border, color
-                               GameData.BORDER + GameData.TILE_SIZE * x,
-                               GameData.BORDER + GameData.TILE_SIZE * y,
-                               GameData.TILE_SIZE, GameData.BORDER, Color.RED)
+                               GameData.BORDER + GameData.TILE * x,
+                               GameData.BORDER + GameData.TILE * y,
+                               GameData.TILE, GameData.BORDER, Color.RED)
                     self.playerTurn = True
                     return
     #*******End define ai()*****************************
