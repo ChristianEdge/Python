@@ -3,7 +3,7 @@ Program Name: Tic Tac Toe
 Program Description: 
 Author: Christian Edge
 Date created: 01 Jan 2020
-Last modified: 09 Jan 2020
+Last modified: Today
 Notes of interest: Uses pygame, time, random modules
 '''
 
@@ -124,7 +124,6 @@ class TicTacToe():
                         if (playBtnX < mouseX < playBtnX + size and
                             playBtnY < mouseY < playBtnY + size):
                             #click inside confines of button
-                            self.new()
                             endGame = False
                         if (quitBtnX < mouseX < quitBtnX + size and
                             quitBtnY < mouseY < quitBtnY + size):
@@ -132,6 +131,9 @@ class TicTacToe():
             self.drawText(playTxtX, playTxtY, "Replay?", 32, Color.BLACK)
             self.drawText(quitTxtX, quitTxtY, "Quit", 32, Color.BLACK)
             self.draw()
+
+        #If they get out of the loop a new game is 
+        self.new()
 
     def events(self):
         """This method handles player inputs -> event.get() returns a list of events
