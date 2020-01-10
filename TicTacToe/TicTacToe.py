@@ -3,7 +3,7 @@ Program Name: Tic Tac Toe
 Program Description: 
 Author: Christian Edge
 Date created: 01 Jan 2020
-Last modified: Today
+Last modified: 10 Jan  2020
 Notes of interest: Uses pygame, time, random modules
 '''
 
@@ -88,11 +88,11 @@ class TicTacToe():
                           42, Color.BLUEWTR)#x, y, text, size, color
             #Update display
             self.draw()
+            self.clock.tick(GameData.FPS)
 
     def endGame(self):
         """This function defines what happens at the end of each game."""
         #Draw buttons
-        print("Endgame")
         size = GameData.TILE // 2
         #Button coordinates
         playBtnX = GameData.TILE + GameData.BORDER - size * 0.8
@@ -131,6 +131,7 @@ class TicTacToe():
             self.drawText(playTxtX, playTxtY, "Replay?", 32, Color.BLACK)
             self.drawText(quitTxtX, quitTxtY, "Quit", 32, Color.BLACK)
             self.draw()
+            self.clock.tick(GameData.FPS)
 
         #If they get out of the loop a new game is 
         self.new()
@@ -169,8 +170,6 @@ class TicTacToe():
             self.winner = True
             self.playerXscore += 1
             self.endGame()
-            print("Winner : Player ")
-            #Pause loop
 
         #Compter AI move
         self.ai(self.gameField)
@@ -180,12 +179,10 @@ class TicTacToe():
             self.winner = True
             self.playerOscore += 1
             self.endGame()
-            print("Winner : Player ", self.playerO)
             
         #Check for stalemate
         if self.isStalemate(self.gameField) and not self.winner:
             self.endGame()
-            print("Stalemate")
         
     def draw(self):
         """Draws game every loop"""
@@ -338,7 +335,6 @@ class TicTacToe():
                         gameFieldCopy[j][i] = 'O'
                         gameFieldCopy2[j][i] = 'X'
                         if self.isWin(gameFieldCopy, self.playerO): #If this element produces a winning game
-                            print("AI win")
                             #Assign the winning move
                             arr[j][i] = 'O'
                             #window, x, y, tile, border, color
@@ -349,7 +345,6 @@ class TicTacToe():
                             self.playerTurn = True
                             return
                         elif self.isWin(gameFieldCopy2, self.playerX): #Prevent player win
-                            print("AI blocks player win")
                             #Assign the winning move
                             arr[j][i] = 'O'
                             #window, x, y, tile, border, color
@@ -357,7 +352,6 @@ class TicTacToe():
                                        GameData.BORDER + GameData.TILE * i,
                                        GameData.BORDER + GameData.TILE * j,
                                        GameData.TILE, GameData.BORDER, Color.RED)
-                            print(arr)
                             self.playerTurn = True
                             return
                             
